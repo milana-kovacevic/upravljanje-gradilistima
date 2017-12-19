@@ -1,6 +1,7 @@
 #include "database.h"
 #include "command.h"
 #include "utils.h"
+#include "menu.h"
 
 
 int main(int argc, char **argv)
@@ -14,15 +15,11 @@ int main(int argc, char **argv)
         connect_to_db("localhost", "root", "root", "UpravljanjeGradilistima");
     }
 
-    char line[512];
+    printf("Welcome!\n");
+
     while (1) {
-        printf("> ");
-        if (fgets(line, 512, stdin) == NULL || is_empty(line))
-        {
-            continue;
-        }
-        execute_command(line);
-        printf("\n");
+        print_main_menu();
+        enter_and_execute_command();
     }
 
     close_db_connection();

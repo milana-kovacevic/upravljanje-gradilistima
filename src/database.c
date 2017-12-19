@@ -29,29 +29,42 @@ int execute_query(const char *query)
     {
         return 0;
     }
-    
+
     if (mysql_query(_db, query))
     {
         error_info("Error:\n%s\n", mysql_error(_db));
         return 0;
     }
 
+    int num_res = 0;
     MYSQL_RES *res = mysql_use_result(_db);
     if (res != NULL)
     {
         printf("Printing results...\n");
-        print_result(res);
+        num_res = print_result(res);
         printf("Done.\n");
         mysql_free_result(res);
     }
+    else
+    {
+        num_res = mysql_affected_rows(_db);
+    }
+    
 #ifdef LOG
-    printf("Query successfully executed.");
+    printf("Query successfully executed.\n");
 #endif
-    return 1;
+    
+    return num_res;
 }
 
-void print_result(MYSQL_RES *res)
+int get_rows_affected(void)
 {
+    return mysql_affected_rows(_db);
+}
+
+int print_result(MYSQL_RES *res)
+{
+    int row_num = 0;
     int col_num = mysql_num_fields(res);
 
     MYSQL_FIELD *field = mysql_fetch_field(res);
@@ -67,7 +80,9 @@ void print_result(MYSQL_RES *res)
         for (int i = 0; i < col_num; i++)
             printf("%20.*s | ", 20, row[i]);
         putchar('\n');
+        row_num++;
     }
+    return row_num;
 }
 
 void close_db_connection()

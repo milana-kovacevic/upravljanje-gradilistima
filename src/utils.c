@@ -1,5 +1,16 @@
 #include "utils.h"
 
+int get_option_number(void)
+{
+    printf("Enter option number: ");
+    char line[LINE_MAX];
+    if (fgets(line, LINE_MAX - 1, stdin) == NULL || is_empty(line))
+    {
+        return -1;
+    }
+    return atoi(line);
+}
+
 int is_empty(const char *s)
 {
     while (*s != '\0')
@@ -11,80 +22,6 @@ int is_empty(const char *s)
         s++;
     }
     return 1;
-}
-
-char** parse_command_line(char *line, int *n)
-{
-#ifdef LOG
-    printf("Parsing command line... ");
-#endif
-    *n = 0;
-    int is_word = 0;
-    int len = strlen(line);
-    for(int i = 0; i < len; i++)
-    {
-        if (isspace(line[i]))
-        {
-            is_word = 0;
-        }
-        else
-        {
-            if (is_word == 0)
-            {
-                (*n)++;
-            }
-            is_word = 1;
-        }
-    }
-    
-    char **args = malloc(sizeof(char*)*(*n));
-    if (args == NULL)
-    {
-        error_fatal("Malloc error.");
-    }
-    
-    int counter = 0;
-    is_word = 0;
-    int begin = 0;
-    for(int i = 0; i < len; i++)
-    {
-        if (isspace(line[i]))
-        {
-            if (is_word == 1)
-            {
-                args[counter] = strndup(line + begin, i - begin);
-                if (args[counter] == NULL)
-                {
-                    error_fatal("Malloc error.");
-                }
-                counter++;
-            }
-            is_word = 0;
-            begin = i;
-        }
-        else
-        {
-            if (is_word == 0)
-            {
-                begin = i;
-            }
-            is_word = 1;
-        }
-    }
-#ifdef LOG
-    printf("Done.\n");
-#endif
-    return args;
-}
- 
-void free_args(char **args, int n)
-{
-    for(int i = 0; i < n; i++)
-    {
-        free(args[i]);
-    }
-    free(args);
-    args = NULL;
 }
 
 int assert(int condition, const char *msg)

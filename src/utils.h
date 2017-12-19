@@ -8,10 +8,10 @@
 #include <stdarg.h>
 
 //#define LOG
+#define LINE_MAX 512
 
+int get_option_number(void);
 int is_empty(const char *s);
-char** parse_command_line(char *line, int *n);
-void free_args(char **args, int n);
 
 int assert(int condition, const char *msg);
 void error_fatal(char *format, ...);
