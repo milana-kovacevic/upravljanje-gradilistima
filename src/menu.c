@@ -58,6 +58,7 @@ void print_extra_menu(void)
     printf(
         "\t1. Radnik sati po gradilistu\n"
         "\t2. Masina sati po gradilistu\n"
+        "\t3. Firma sati\n"
     );
 }
 

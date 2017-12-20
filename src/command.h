@@ -21,14 +21,26 @@ void izlistaj_firme(void);
 void add_data(void);
 void dodaj_gradiliste(void);
 void dodaj_firmu(void);
+void dodaj_radnika(void);
+void dodaj_satnicu_radika(void);
+void dodaj_masinu(void);
+void dodaj_satnicu_masine(void);
+void dodaj_fazu_radova(void);
+void dodaj_vrstu_radova(void);
+void dodaj_radove_na_gradilistu(void);
+void dodaj_trosak(void);
+void dodaj_trosak_gradiliste(void);
+void dodaj_proizvod(void);
+void dodaj_nabavku(void);
 
 void update_data(void);
 
 void delete_data(void);
 
 void extra_options(void);
-void radnik_sati_po_gradilistu(void);
-void masina_sati_po_gradilistu(void);
+int radnik_sati_po_gradilistu(void);
+int masina_sati_po_gradilistu(void);
+int firma_sati_po_gradilistu(void);
 
 
 #endif

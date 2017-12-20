@@ -93,7 +93,7 @@ void add_data(void)
             break;
         case 2:
             dodaj_firmu();
-            break;/*
+            break;
         case 3:
             dodaj_radnika();
             break;
@@ -126,34 +126,318 @@ void add_data(void)
             break;
         case 13:
             dodaj_nabavku();
-            break;*/
+            break;
         default:
             printf("Unknown command number.\n");
             break;
     }
-    getchar();
 }
 
 void dodaj_gradiliste(void)
 {
-    printf("Unesi naziv, adresu i status gradilista: ");
     char naziv[MAX], adresa[MAX], status[MAX];
-    scanf("%s%s%s", naziv, adresa, status);
+    // naziv
+    printf("Unesi podatke:\n\tNaziv: ");
+    if (fgets(naziv, MAX - 1, stdin) == NULL || is_empty(naziv))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    naziv[strlen(naziv)-1] = '\0';
+    
+    // adresa
+    printf("\tAdresa: ");
+    if (fgets(adresa, MAX - 1, stdin) == NULL || is_empty(adresa))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    adresa[strlen(adresa)-1] = '\0';
+    
+    // status
+    printf("\tStatus (prazno za default): ");
+    if (fgets(status, MAX - 1, stdin) == NULL)
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    status[strlen(status)-1] = '\0';
+    
     char query[MAX_QUERY];
-    sprintf(query, "INSERT INTO Gradiliste (Naziv, Adresa, Status) "
-            "VALUES (\"%s\", \"%s\", \"%s\")", naziv, adresa, status);
+    if (is_empty(status))
+    {
+        sprintf(query, "INSERT INTO Gradiliste (Naziv, Adresa) "
+                "VALUES (\"%s\", \"%s\")", naziv, adresa);
+    }
+    else
+    {
+        sprintf(query, "INSERT INTO Gradiliste (Naziv, Adresa, Status) "
+                "VALUES (\"%s\", \"%s\", \"%s\")", naziv, adresa, status);
+    }
     execute_query(query);
 }
 
 void dodaj_firmu(void)
 {
-    printf("Unesi ime, adresu i telefon firme: ");
     char ime[MAX], adresa[MAX], telefon[MAX];
-    scanf("%s%s%s", ime, adresa, telefon);
     char query[MAX_QUERY];
-    sprintf(query, "INSERT INTO Firma (Ime, Adresa, Telefon) "
-            "VALUES (\"%s\", \"%s\", \"%s\")", ime, adresa, telefon);
+    int offset = 0;
+    // ime
+    printf("Unesi podatke:\n\tIme: ");
+    if (fgets(ime, MAX - 1, stdin) == NULL || is_empty(ime))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    ime[strlen(ime)-1] = '\0';
+    offset = sprintf(query, "INSERT INTO Firma (Ime, Adresa, Telefon) "
+            "VALUES (\"%s\", ", ime);
+    // adresa
+    printf("\tAdresa (prazno za null): ");
+    if (fgets(adresa, MAX - 1, stdin) == NULL)
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    adresa[strlen(adresa)-1] = '\0';
+    if (is_empty(adresa))
+    {
+        offset += sprintf(query + offset, "null, ");
+    }
+    else
+    {
+        offset += sprintf(query + offset, "\"%s\", ", adresa);
+    }
+    
+    // telefon
+    printf("\tTelefon (prazno za null): ");
+    if (fgets(telefon, MAX - 1, stdin) == NULL)
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    telefon[strlen(telefon)-1] = '\0';
+    
+    if (is_empty(telefon))
+    {
+        offset += sprintf(query + offset, "null)");
+    }
+    else
+    {
+        offset += sprintf(query + offset, "\"%s\")", telefon);
+    }
     execute_query(query);
+}
+
+void dodaj_radnika(void)
+{
+    char ime[MAX], prezime[MAX], pozicija[MAX], telefon[MAX], cenaPoSatu[MAX];
+    int idFirme;
+    char query[MAX_QUERY];
+    int offset = 0;
+    printf("Unesi ime, prezime, id firme, poziciju: ");
+    scanf("%s%s%d%s", ime, prezime, &idFirme, pozicija);
+    getchar();
+    offset = sprintf(query, "INSERT INTO Radnik (Ime, Prezime, idFirme, Pozicija, Telefon, CenaPoSatu) "
+            "VALUES (\"%s\", \"%s\", \"%d\", \"%s\", ", ime, prezime, idFirme, pozicija);
+    // telefon
+    printf("Telefon (prazno za null): ");
+    if (fgets(telefon, MAX - 1, stdin) == NULL)
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    telefon[strlen(telefon)-1] = '\0';
+    if (is_empty(telefon))
+    {
+        offset += sprintf(query + offset, "null, ");
+    }
+    else
+    {
+        offset += sprintf(query + offset, "\"%s\", ", telefon);
+    }
+    // cena po satu
+    printf("CenaPoSatu (prazno za default): ");
+    if (fgets(cenaPoSatu, MAX - 1, stdin) == NULL)
+    {
+        printf("Invalid input.\n");
+        return;
+    }    
+    if (is_empty(cenaPoSatu))
+    {
+        offset += sprintf(query + offset, "null)");
+    }
+    else
+    {
+        offset += sprintf(query + offset, "%f)", atof(cenaPoSatu));
+    }
+    execute_query(query);
+}
+
+void dodaj_satnicu_radika(void)
+{
+    int id_radnika, id_gradilista, broj_sati;
+    char datum[MAX];
+    printf("Unesi id radnika, id gradilista, datum i broj sati: ");
+    scanf("%d%d%s%d", &id_radnika, &id_gradilista, datum, &broj_sati);
+    getchar();
+    char query[MAX_QUERY];
+    sprintf(query, "INSERT INTO SatnicaRadnika VALUES (%d, %d, \"%s\", %d)",
+            id_radnika, id_gradilista, datum, broj_sati);
+    execute_query(query);
+}
+
+void dodaj_masinu(void)
+{
+    char naziv[MAX], proizvodjac[MAX], potrosnja_goriva[MAX];
+    double cena_po_satu;
+    char query[MAX_QUERY];
+    int offset = 0;
+
+    // naziv
+    printf("Unesi podatke:\n\tNaziv: ");
+    if (fgets(naziv, MAX - 1, stdin) == NULL || is_empty(naziv))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    naziv[strlen(naziv)-1] = '\0';
+    offset = sprintf(query, "INSERT INTO Masina (Naziv, Proizvodjac, PotrosnjaGoriva, CenaPoSatu) "
+            "VALUES (\"%s\", ", naziv);
+
+    // proizvodjac
+    printf("\tProizvodjac (prazno za null): ");
+    if (fgets(proizvodjac, MAX - 1, stdin) == NULL)
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    proizvodjac[strlen(proizvodjac)-1] = '\0';
+    if (is_empty(proizvodjac))
+    {
+        offset += sprintf(query + offset, "null, ");
+    }
+    else
+    {
+        offset += sprintf(query + offset, "\"%s\", ", proizvodjac);
+    }
+
+    // potrosnja_goriva
+    printf("\tPotrosnja goriva (prazno za null): ");
+    if (fgets(potrosnja_goriva, MAX - 1, stdin) == NULL)
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    potrosnja_goriva[strlen(potrosnja_goriva)-1] = '\0';
+
+    if (is_empty(potrosnja_goriva))
+    {
+        offset += sprintf(query + offset, "null, ");
+    }
+    else
+    {
+        offset += sprintf(query + offset, "%f, ", atof(potrosnja_goriva));
+    }
+
+    // cena po satu
+    printf("\tCena po satu: ");
+    scanf("%lf", &cena_po_satu);
+    getchar();
+    offset += sprintf(query + offset, "%lf)", cena_po_satu);
+
+    execute_query(query);
+}
+
+void dodaj_satnicu_masine(void)
+{
+    int id_masine, id_gradilista, broj_sati;
+    char datum[MAX];
+    printf("Unesi id masine, id gradilista, datum i broj sati: ");
+    scanf("%d%d%s%d", &id_masine, &id_gradilista, datum, &broj_sati);
+    getchar();
+    char query[MAX_QUERY];
+    sprintf(query, "INSERT INTO SatnicaMasine VALUES (%d, %d, \"%s\", %d)",
+            id_masine, id_gradilista, datum, broj_sati);
+    execute_query(query);
+}
+
+void dodaj_fazu_radova(void)
+{
+    char naziv[MAX];
+    printf("Unesi podatke:\n\tNaziv faze: ");
+    if (fgets(naziv, MAX - 1, stdin) == NULL || is_empty(naziv))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    naziv[strlen(naziv)-1] = '\0';
+    char query[MAX_QUERY];
+    sprintf(query, "INSERT INTO FazaRadova (Naziv) VALUES (\"%s\")", naziv);
+    execute_query(query);
+}
+
+void dodaj_vrstu_radova(void)
+{
+    char naziv[MAX];
+    printf("Unesi podatke:\n\tNaziv vrste radova: ");
+    if (fgets(naziv, MAX - 1, stdin) == NULL || is_empty(naziv))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    naziv[strlen(naziv)-1] = '\0';
+    char query[MAX_QUERY];
+    sprintf(query, "INSERT INTO VrstaRadova (Naziv) VALUES (\"%s\")", naziv);
+    execute_query(query);
+}
+
+void dodaj_radove_na_gradilistu(void)
+{
+    int id_gradilista, id_vrste, id_faze;
+    char datum[MAX];
+    printf("Unesi id gradilista, id vrste radova, id faze radova i datum: ");
+    scanf("%d%d%d%s", &id_gradilista, &id_vrste, &id_faze, datum);
+    getchar();
+    char query[MAX_QUERY];
+    sprintf(query, "INSERT INTO RadoviNaGradilistu (idGradilista, idVrsteRadova, idFazeRadova, Datum) "
+            "VALUES (%d, %d, %d, \"%s\")", id_gradilista, id_vrste, id_faze, datum);
+    execute_query(query);
+}
+
+void dodaj_trosak(void)
+{
+    char naziv[MAX];
+    double cena_po_danu;
+    printf("Unesi podatke:\n\tNaziv troska: ");
+    if (fgets(naziv, MAX - 1, stdin) == NULL || is_empty(naziv))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    naziv[strlen(naziv)-1] = '\0';
+    char query[MAX_QUERY];
+    int offset = sprintf(query, "INSERT INTO Trosak (Naziv, CenaPoDanu) VALUES (\"%s\", ", naziv);
+    printf("\tCena po danu: ");
+    scanf("%lf", &cena_po_danu);
+    getchar();
+    sprintf(query + offset, "%lf)", cena_po_danu);
+    execute_query(query);
+}
+
+void dodaj_trosak_gradiliste(void)
+{
+    // TODO
+}
+
+void dodaj_proizvod(void)
+{
+    // TODO
+}
+
+void dodaj_nabavku(void)
+{
+    // TODO
 }
 
 void update_data(void)
@@ -214,22 +498,34 @@ void delete_data(void)
 
 void extra_options(void)
 {
+    int rows_returned;
     print_extra_menu();
     switch(get_option_number())
     {
         case 1:
-            radnik_sati_po_gradilistu();
+            rows_returned = radnik_sati_po_gradilistu();
             break;
         case 2:
-            masina_sati_po_gradilistu();
+            rows_returned = masina_sati_po_gradilistu();
+            break;
+        case 3:
+            rows_returned = firma_sati_po_gradilistu();
             break;
         default:
             printf("Unknown command number.\n");
             return;
     }
+    if (rows_returned == 1)
+    {
+        printf("%d row returned.\n", rows_returned);
+    }
+    else
+    {
+        printf("%d rows returned.\n", rows_returned);
+    }
 }
 
-void radnik_sati_po_gradilistu(void)
+int radnik_sati_po_gradilistu(void)
 {
     char from[MAX], to[MAX];
     printf("Unesite pocetni datum: ");
@@ -244,11 +540,10 @@ void radnik_sati_po_gradilistu(void)
                     " AND sr.Datum >= '%s' AND sr.Datum <= '%s' "
                     "GROUP BY r.idRadnika, r.Ime, r.Prezime, g.idGradilista, g.Naziv", from, to
            );
-    int rows_returned = execute_query(query);
-    printf("%d rows returned.\n", rows_returned);
+    return execute_query(query);
 }
 
-void masina_sati_po_gradilistu(void)
+int masina_sati_po_gradilistu(void)
 {
     char from[MAX], to[MAX];
     printf("Unesite pocetni datum: ");
@@ -263,6 +558,25 @@ void masina_sati_po_gradilistu(void)
                     " AND sm.Datum >= '%s' AND sm.Datum <= '%s' "
                     "GROUP BY m.idMasine, m.Naziv, g.idGradilista, g.Naziv", from, to
            );
-    int rows_returned = execute_query(query);
-    printf("%d rows returned.\n", rows_returned);
+    return execute_query(query);
+}
+
+int firma_sati_po_gradilistu(void)
+{
+    printf("Unesite ime firme: ");
+    char ime_firme[MAX];
+    if (fgets(ime_firme, MAX - 1, stdin) == NULL || is_empty(ime_firme))
+    {
+        printf("Invalid input.\n");
+        return 0;
+    }
+    ime_firme[strlen(ime_firme)-1] = '\0';
+    char query[MAX_QUERY];
+    sprintf(query, "SELECT f.Ime, g.Naziv, sum(sr.BrojSati) AS 'Ukupno sati' "
+                    "FROM Firma f, Gradiliste g, Radnik r, SatnicaRadnika sr "
+                    "WHERE f.Ime = \"%s\" AND f.idFirme = r.idFirme AND "
+                        "sr.idRadnika = r.idRadnika AND g.idGradilista = sr.idGradilista "
+                    "GROUP BY f.Ime, f.idFirme, g.Naziv", ime_firme
+           );
+    return execute_query(query);
 }
