@@ -16,7 +16,7 @@ VPATH    = src
 
 $(PROGRAM): $(OBJ)
 	$(CC) -o $@ $^ $(CCLIBS) $(CCFLAGS)
-	# cat scripts/create.sql scripts/trigger.sql scripts/insert.sql | mysql -u root -p
+	cat scripts/create.sql scripts/trigger.sql scripts/insert.sql | mysql -u root -p
 
 .PHONY: clean
 

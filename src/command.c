@@ -489,7 +489,391 @@ void dodaj_nabavku(void)
 void update_data(void)
 {
     print_update_menu();
+    int option_number = get_option_number();
+    switch(option_number)
+    {
+        case 1:
+            azuriraj_gradiliste();
+            break;
+        case 2:
+            azuriraj_firmu();
+            break;
+        case 3:
+            azuriraj_radnika();
+            break;
+        case 4:
+            azuriraj_masinu();
+            break;
+        case 5:
+            azuriraj_fazu_radova();
+            break;
+        case 6:
+            azuriraj_vrstu_radova();
+            break;
+        case 7:
+            azuriraj_trosak();
+            break;
+        case 8:
+            azuriraj_proizvod();
+            break;
+        default:
+            printf("Unknown command number.\n");
+            return;
+    }
+}
 
+void azuriraj_gradiliste(void)
+{
+    execute_query("SELECT * FROM Gradiliste");
+    printf("Izaberi id gradilista koje zelis da azuriras: ");
+    int id;
+    scanf("%d", &id);
+    getchar();
+    printf("Atributi:\n");
+    printf(
+        "\t1. Naziv\n"
+        "\t2. Adresa\n"
+        "\t3. Status\n"
+    );
+    int option_number = get_option_number();
+    if (option_number < 1 || option_number > 3)
+    {
+        printf("Invalid option number.\n");
+        return;
+    }
+    char input[MAX];
+    printf("Unesi novu vrednost: ");
+    if (fgets(input, MAX - 1, stdin) == NULL || is_empty(input))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    input[strlen(input) - 1] = '\0';
+
+    char query[MAX_QUERY];
+    switch (option_number)
+    {
+        case 1:
+            sprintf(query, "UPDATE Gradiliste SET Naziv = \"%s\" WHERE idGradilista = %d", input, id);
+            break;
+        case 2:
+            sprintf(query, "UPDATE Gradiliste SET Adresa = \"%s\" WHERE idGradilista = %d", input, id);
+            break;
+        case 3:
+            sprintf(query, "UPDATE Gradiliste SET Status = \"%s\" WHERE idGradilista = %d", input, id);
+            break;
+    }
+    execute_query(query);
+
+    printf("\nNovo stanje:\n");
+    sprintf(query, "SELECT * FROM Gradiliste WHERE idGradilista = %d", id);
+    execute_query(query);
+}
+
+void azuriraj_firmu(void)
+{
+    execute_query("SELECT * FROM Firma");
+    printf("Izaberi id firme koju zelis da azuriras: ");
+    int id;
+    scanf("%d", &id);
+    getchar();
+    printf("Atributi:\n");
+    printf(
+        "\t1. Ime\n"
+        "\t2. Adresa\n"
+        "\t3. Telefon\n"
+    );
+    int option_number = get_option_number();
+    if (option_number < 1 || option_number > 3)
+    {
+        printf("Invalid option number.\n");
+        return;
+    }
+    char input[MAX];
+    printf("Unesi novu vrednost: ");
+    if (fgets(input, MAX - 1, stdin) == NULL || is_empty(input))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    input[strlen(input) - 1] = '\0';
+    
+    char query[MAX_QUERY];
+    switch (option_number)
+    {
+        case 1:
+            sprintf(query, "UPDATE Firma SET Ime = \"%s\" WHERE idFirme = %d", input, id);
+            break;
+        case 2:
+            sprintf(query, "UPDATE Firma SET Adresa = \"%s\" WHERE idFirme = %d", input, id);
+            break;
+        case 3:
+            sprintf(query, "UPDATE Firma SET Telefon = \"%s\" WHERE idFirme = %d", input, id);
+            break;
+    }
+    execute_query(query);
+
+    printf("\nNovo stanje:\n");
+    sprintf(query, "SELECT * FROM Firma WHERE idFirme = %d", id);
+    execute_query(query);
+}
+
+void azuriraj_radnika(void)
+{
+    execute_query("SELECT * FROM Radnik");
+    printf("Izaberi id radnika koga zelis da azuriras: ");
+    int id;
+    scanf("%d", &id);
+    getchar();
+    printf("Atributi:\n");
+    printf(
+        "\t1. Ime\n"
+        "\t2. Prezime\n"
+        "\t3. id firme\n"
+        "\t4. Pozicija\n"
+        "\t5. Telefon\n"
+        "\t6. Cena po satu\n"
+    );
+    int option_number = get_option_number();
+    if (option_number < 1 || option_number > 6)
+    {
+        printf("Invalid option number.\n");
+        return;
+    }
+    char input[MAX];
+    printf("Unesi novu vrednost: ");
+    if (fgets(input, MAX - 1, stdin) == NULL || is_empty(input))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    input[strlen(input) - 1] = '\0';
+    
+    char query[MAX_QUERY];
+    switch (option_number)
+    {
+        case 1:
+            sprintf(query, "UPDATE Radnik SET Ime = \"%s\" WHERE idRadnika = %d", input, id);
+            break;
+        case 2:
+            sprintf(query, "UPDATE Radnik SET Prezime = \"%s\" WHERE idRadnika = %d", input, id);
+            break;
+        case 3:
+            sprintf(query, "UPDATE Radnik SET idFirme = %d WHERE idRadnika = %d", atoi(input), id);
+            break;
+        case 4:
+            sprintf(query, "UPDATE Radnik SET Pozicija = \"%s\" WHERE idRadnika = %d", input, id);
+            break;
+        case 5:
+            sprintf(query, "UPDATE Radnik SET Telefon = \"%s\" WHERE idRadnika = %d", input, id);
+            break;
+        case 6:
+            sprintf(query, "UPDATE Radnik SET CenaPoSatu = %f WHERE idRadnika = %d", atof(input), id);
+            break;
+    }
+    execute_query(query);
+
+    printf("\nNovo stanje:\n");
+    sprintf(query, "SELECT * FROM Radnik WHERE idRadnika = %d", id);
+    execute_query(query);
+}
+
+void azuriraj_masinu(void)
+{
+    execute_query("SELECT * FROM Masina");
+    printf("Izaberi id masine koju zelis da azuriras: ");
+    int id;
+    scanf("%d", &id);
+    getchar();
+    printf("Atributi:\n");
+    printf(
+        "\t1. Naziv\n"
+        "\t2. Proizvodjac\n"
+        "\t3. Potrosnja goriva\n"
+        "\t4. Cena po satu\n"
+    );
+    int option_number = get_option_number();
+    if (option_number < 1 || option_number > 3)
+    {
+        printf("Invalid option number.\n");
+        return;
+    }
+    char input[MAX];
+    printf("Unesi novu vrednost: ");
+    if (fgets(input, MAX - 1, stdin) == NULL || is_empty(input))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    input[strlen(input) - 1] = '\0';
+    
+    char query[MAX_QUERY];
+    switch (option_number)
+    {
+        case 1:
+            sprintf(query, "UPDATE Masina SET Naziv = \"%s\" WHERE idMasine = %d", input, id);
+            break;
+        case 2:
+            sprintf(query, "UPDATE Masina SET Proizvodjac = \"%s\" WHERE idMasine = %d", input, id);
+            break;
+        case 3:
+            sprintf(query, "UPDATE Masina SET PotrosnjaGoriva = %lf WHERE idMasine = %d", atof(input), id);
+            break;
+        case 4:
+            sprintf(query, "UPDATE Masina SET CenaPoSatu = %lf WHERE idMasine = %d", atof(input), id);
+            break;
+    }
+    execute_query(query);
+
+    printf("\nNovo stanje:\n");
+    sprintf(query, "SELECT * FROM Masina WHERE idMasine = %d", id);
+    execute_query(query);
+}
+
+void azuriraj_fazu_radova(void)
+{
+    execute_query("SELECT * FROM FazaRadova");
+    printf("Izaberi id faze radova koga zelis da azuriras: ");
+    int id;
+    scanf("%d", &id);
+    getchar();
+    char input[MAX];
+    printf("Unesi novi naziv faze: ");
+    if (fgets(input, MAX - 1, stdin) == NULL || is_empty(input))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    input[strlen(input) - 1] = '\0';
+    
+    char query[MAX_QUERY];
+    sprintf(query, "UPDATE FazaRadova SET Naziv = \"%s\" WHERE idFazeRadova = %d", input, id);
+    execute_query(query);
+
+    printf("\nNovo stanje:\n");
+    sprintf(query, "SELECT * FROM FazaRadova WHERE idFazeRadova = %d", id);
+    execute_query(query);
+}
+
+void azuriraj_vrstu_radova(void)
+{
+    execute_query("SELECT * FROM VrstaRadova");
+    printf("Izaberi id vrste radova koga zelis da azuriras: ");
+    int id;
+    scanf("%d", &id);
+    getchar();
+    char input[MAX];
+    printf("Unesi novi naziv vrste radova: ");
+    if (fgets(input, MAX - 1, stdin) == NULL || is_empty(input))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    input[strlen(input) - 1] = '\0';
+    
+    char query[MAX_QUERY];
+    sprintf(query, "UPDATE VrstaRadova SET Naziv = \"%s\" WHERE idVrsteRadova = %d", input, id);
+    execute_query(query);
+
+    printf("\nNovo stanje:\n");
+    sprintf(query, "SELECT * FROM VrstaRadova WHERE idVrsteRadova = %d", id);
+    execute_query(query);
+}
+
+void azuriraj_trosak(void)
+{
+    execute_query("SELECT * FROM Trosak");
+    printf("Izaberi id troska koga zelis da azuriras: ");
+    int id;
+    scanf("%d", &id);
+    getchar();
+    printf("Atributi:\n");
+    printf(
+        "\t1. Naziv\n"
+        "\t2. Cena po danu\n"
+    );
+    int option_number = get_option_number();
+    if (option_number < 1 || option_number > 2)
+    {
+        printf("Invalid option number.\n");
+        return;
+    }
+    char input[MAX];
+    printf("Unesi novu vrednost: ");
+    if (fgets(input, MAX - 1, stdin) == NULL || is_empty(input))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    input[strlen(input) - 1] = '\0';
+    
+    char query[MAX_QUERY];
+    switch (option_number)
+    {
+        case 1:
+            sprintf(query, "UPDATE Trosak SET Naziv = \"%s\" WHERE idTroska = %d", input, id);
+            break;
+        case 2:
+            sprintf(query, "UPDATE Trosak SET CenaPoDanu = %f WHERE idTroska = %d", atof(input), id);
+            break;
+    }
+    execute_query(query);
+
+    printf("\nNovo stanje:\n");
+    sprintf(query, "SELECT * FROM Trosak WHERE idTroska = %d", id);
+    execute_query(query);
+}
+
+void azuriraj_proizvod(void)
+{
+    execute_query("SELECT * FROM Proizvod");
+    printf("Izaberi id proizvoda koga zelis da azuriras: ");
+    int id;
+    scanf("%d", &id);
+    getchar();
+    printf("Atributi:\n");
+    printf(
+        "\t1. Naziv\n"
+        "\t2. Cena\n"
+        "\t3. Proizvodjac\n"
+        "\t4. Napomena\n"
+    );
+    int option_number = get_option_number();
+    if (option_number < 1 || option_number > 4)
+    {
+        printf("Invalid option number.\n");
+        return;
+    }
+    char input[MAX];
+    printf("Unesi novu vrednost: ");
+    if (fgets(input, MAX - 1, stdin) == NULL || is_empty(input))
+    {
+        printf("Invalid input.\n");
+        return;
+    }
+    input[strlen(input) - 1] = '\0';
+    
+    char query[MAX_QUERY];
+    switch (option_number)
+    {
+        case 1:
+            sprintf(query, "UPDATE Proizvod SET Naziv = \"%s\" WHERE idProizvoda = %d", input, id);
+            break;
+        case 2:
+            sprintf(query, "UPDATE Proizvod SET Cena = %f WHERE idProizvoda = %d", atof(input), id);
+            break;
+        case 3:
+            sprintf(query, "UPDATE Proizvod SET Proizvodjac = \"%s\" WHERE idProizvoda = %d", input, id);
+            break;
+        case 4:
+            sprintf(query, "UPDATE Proizvod SET Napomena = \"%s\" WHERE idProizvoda = %d", input, id);
+            break;
+    }
+    execute_query(query);
+
+    printf("\nNovo stanje:\n");
+    sprintf(query, "SELECT * FROM Proizvod WHERE idProizvoda = %d", id);
+    execute_query(query);
 }
 
 void delete_data(void)

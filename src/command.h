@@ -34,6 +34,14 @@ void dodaj_proizvod(void);
 void dodaj_nabavku(void);
 
 void update_data(void);
+void azuriraj_gradiliste(void);
+void azuriraj_radnika(void);
+void azuriraj_firmu(void);
+void azuriraj_masinu(void);
+void azuriraj_fazu_radova(void);
+void azuriraj_vrstu_radova(void);
+void azuriraj_trosak(void);
+void azuriraj_proizvod(void);
 
 void delete_data(void);
 

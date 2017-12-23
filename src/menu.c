@@ -31,8 +31,17 @@ void print_add_menu(void)
 void print_update_menu(void)
 {
     printf("\n****** UPDATE MENU ******\n");
-    printf(" Choose entity to updade:\n");
-    print_entities();
+    printf(" Choose entity to update:\n");
+    printf(
+        "\t1. Gradiliste\n"
+        "\t2. Firma\n"
+        "\t3. Radnik\n"
+        "\t4. Masina\n"
+        "\t5. Faza radova\n"
+        "\t6. Vrsta radova\n"
+        "\t7. Trosak\n"
+        "\t8. Proizvod\n"
+    );
 }
 
 void print_delete_menu(void)

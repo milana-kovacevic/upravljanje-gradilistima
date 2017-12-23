@@ -21,6 +21,23 @@ begin
     end if;
 end $$
 
+-- ------------------------------------------------------
+-- Triger koji proverava da li je novi status gradilista 
+-- u pripremi, aktivno, pauza ili zavrseno.
+-- ------------------------------------------------------
+DROP TRIGGER IF EXISTS `triger_buGradiliste` $$
+
+create trigger triger_buGradiliste before update on Gradiliste
+for each row
+begin
+    declare msg VARCHAR(255);
+    if (new.Status is null) then
+        set new.Status = 'u pripremi';
+    elseif (new.Status not in ('u pripremi', 'aktivno', 'pauza', 'zavrseno')) then
+        set msg = 'Greska: Status gradilista mora da bude u pripremi, aktivno, pauza ili zavrseno.';
+        SIGNAL sqlstate '45000' set message_text = msg;
+    end if;
+end $$
 
 -- -----------------------------------------------------
 -- Triger proverava da li je cena usluga radnika po satu
@@ -42,6 +59,25 @@ begin
     end if;
 end $$
 
+-- -----------------------------------------------------
+-- Triger proverava da li je cena usluga radnika po satu
+-- u skladu sa zakonom
+-- -----------------------------------------------------
+DROP TRIGGER IF EXISTS `triger_buRadnik` $$
+
+create trigger triger_buRadnik before update on Radnik 
+for each row
+begin
+    declare msg VARCHAR(255);
+    declare minCena DECIMAL;
+    set minCena = 250;
+    if (new.CenaPoSatu is null) then
+        set new.CenaPoSatu = minCena;
+    elseif (new.CenaPoSatu < minCena) then
+        set msg = 'Greska: Cena radnika po satu mora da bude bar 250 din.';
+        SIGNAL sqlstate '45000' set message_text = msg;
+    end if;
+end $$
 
 -- -----------------------------------------------------
 -- Triger koji proverava da li je kolicina > 0 i postavlja
