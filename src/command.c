@@ -427,23 +427,69 @@ void dodaj_trosak(void)
 
 void dodaj_trosak_gradiliste(void)
 {
-    // TODO
+    int id_gradilista, id_troska;
+    char datum[MAX];
+    printf("Unesi id gradilista, id troska i datum pocetka: ");
+    scanf("%d%d%s", &id_gradilista, &id_troska, datum);
+    getchar();
+    char query[MAX_QUERY];
+    sprintf(query, "INSERT INTO TrosakGradiliste (idGradilista, idTroska, DatumPocetka) "
+            "VALUES (%d, %d, \"%s\")", id_gradilista, id_troska, datum);
+    execute_query(query);
 }
 
 void dodaj_proizvod(void)
 {
-    // TODO
+    char naziv[MAX], proizvodjac[MAX];
+    double cena;
+    printf("Unesi naziv, cenu i proizvodjaca: ");
+    scanf("%s%lf%s", naziv, &cena, proizvodjac);
+    getchar();
+    char query[MAX_QUERY];
+    sprintf(query, "INSERT INTO Proizvod (Naziv, Cena, Proizvodjac) "
+            "VALUES (\"%s\", %lf, \"%s\")", naziv, cena, proizvodjac);
+    execute_query(query);
 }
 
 void dodaj_nabavku(void)
 {
-    // TODO
+    int id_gradilista, id_proizvoda, kolicina;
+    char datum[MAX], napomena[MAX];
+    printf("Unesi id gradilista, id proizvoda i kolicinu: ");
+    scanf("%d%d%d", &id_gradilista, &id_proizvoda, &kolicina);
+    getchar();
+    char query[MAX_QUERY];
+    int offset = sprintf(query, "INSERT INTO Nabavka (idGradilista, idProizvoda, Kolicina, Datum, Napomena) "
+            "VALUES (%d, %d, %d, ", id_gradilista, id_proizvoda, kolicina);
+    
+    printf("Unesi datum (prazno za danasnji datum): ");
+    if (fgets(datum, MAX - 1, stdin) == NULL || is_empty(datum))
+    {
+        offset += sprintf(query + offset, "null, ");
+    }
+    else
+    {
+        datum[strlen(datum) - 1] = '\0';
+        offset += sprintf(query + offset, "\"%s\", ", datum);
+    }
+    
+    printf("Unesi napomenu (prazno za null): ");
+    if (fgets(napomena, MAX - 1, stdin) == NULL || is_empty(napomena))
+    {
+        offset += sprintf(query + offset, "null)");
+    }
+    else
+    {
+        napomena[strlen(napomena) - 1] = '\0';
+        offset += sprintf(query + offset, "\"%s\")", napomena);
+    }
+    execute_query(query);
 }
 
 void update_data(void)
 {
     print_update_menu();
-    
+
 }
 
 void delete_data(void)
