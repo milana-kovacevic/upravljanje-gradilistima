@@ -68,6 +68,8 @@ void print_extra_menu(void)
         "\t1. Radnik sati po gradilistu\n"
         "\t2. Masina sati po gradilistu\n"
         "\t3. Firma sati\n"
+        "\t4. Firma radnici\n"
+        "\t5. Isplata radnicima\n"
     );
 }
 

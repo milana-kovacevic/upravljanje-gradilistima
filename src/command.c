@@ -941,6 +941,12 @@ void extra_options(void)
         case 3:
             rows_returned = firma_sati_po_gradilistu();
             break;
+        case 4:
+            rows_returned = firma_radnici();
+            break;
+        case 5:
+            rows_returned = isplata_radnicima();
+            break;
         default:
             printf("Unknown command number.\n");
             return;
@@ -1007,6 +1013,36 @@ int firma_sati_po_gradilistu(void)
                     "WHERE f.Ime = \"%s\" AND f.idFirme = r.idFirme AND "
                         "sr.idRadnika = r.idRadnika AND g.idGradilista = sr.idGradilista "
                     "GROUP BY f.Ime, f.idFirme, g.Naziv", ime_firme
+           );
+    return execute_query(query);
+}
+
+int firma_radnici(void)
+{
+    printf("Unesite ime firme: ");
+    char ime_firme[MAX];
+    if (fgets(ime_firme, MAX - 1, stdin) == NULL || is_empty(ime_firme))
+    {
+        printf("Invalid input.\n");
+        return 0;
+    }
+    ime_firme[strlen(ime_firme)-1] = '\0';
+    char query[MAX_QUERY];
+    sprintf(query, "SELECT f.Ime, r.Ime, r.Prezime, r.Pozicija "
+                    "FROM Firma f, Radnik r "
+                    "WHERE f.Ime = \"%s\" AND f.idFirme = r.idFirme ", ime_firme
+           );
+    return execute_query(query);
+}
+
+int isplata_radnicima(void)
+{
+    char query[MAX_QUERY];
+    sprintf(query, "SELECT f.Ime AS Firma, r.Ime, r.Prezime, r.CenaPoSatu, "
+                    "SUM(sr.BrojSati) as 'Ukupno sati', r.CenaPoSatu *  SUM(sr.BrojSati) AS Isplata "
+                    "FROM Firma f, Radnik r, SatnicaRadnika sr "
+                    "WHERE f.idFirme = r.idFirme AND r.idRadnika = sr.idRadnika "
+                    "GROUP BY sr.idRadnika, r.Ime, r.Prezime, r.CenaPoSatu, f.Ime"
            );
     return execute_query(query);
 }

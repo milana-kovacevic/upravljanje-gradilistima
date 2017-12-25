@@ -49,6 +49,7 @@ void extra_options(void);
 int radnik_sati_po_gradilistu(void);
 int masina_sati_po_gradilistu(void);
 int firma_sati_po_gradilistu(void);
-
+int firma_radnici(void);
+int isplata_radnicima(void);
 
 #endif
